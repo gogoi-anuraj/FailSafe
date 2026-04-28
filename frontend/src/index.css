@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+/* ── Theme tokens ──────────────────────────────────────────── */
+:root {
+  --color-ink:    #0D0D0D;
+  --color-slate:  #1A1D23;
+  --color-panel:  #21262F;
+  --color-border: #2E333D;
+  --color-muted:  #6B7280;
+  --color-ghost:  #9CA3AF;
+  --color-snow:   #F4F5F7;
+  --color-high:   #EF4444;
+  --color-medium: #F59E0B;
+  --color-low:    #10B981;
+  --color-accent: #6366F1;
+
+  --font-family-display: "DM Serif Display", serif;
+  --font-family-body:    "DM Sans", sans-serif;
+  --font-family-mono:    "JetBrains Mono", monospace;
+}
+
+/* ── Base ──────────────────────────────────────────────────── */
+@layer base {
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-snow);
+    font-family: var(--font-family-body);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 9999px;
+  }
+}
+
+/* ── Reusable component classes ────────────────────────────── */
+@layer components {
+  .card {
+    background-color: var(--color-panel);
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-accent);
+    color: #fff;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.15s;
+    cursor: pointer;
+    border: none;
+    font-size: 0.875rem;
+  }
+  .btn-primary:hover:not(:disabled) { background-color: #818cf8; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: var(--color-ghost);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border);
+    transition: all 0.15s;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+  .btn-ghost:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--color-snow);
+    border-color: var(--color-ghost);
+  }
+
+  .input {
+    background-color: var(--color-slate);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    color: var(--color-snow);
+    font-size: 0.875rem;
+    width: 100%;
+    transition: all 0.15s;
+    outline: none;
+    display: block;
+  }
+  .input::placeholder { color: var(--color-muted); }
+  .input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 1px var(--color-accent);
+  }
+
+  select.input {
+    cursor: pointer;
+  }
+
+  .label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-ghost);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .badge {
+    font-size: 0.75rem;
+    font-family: var(--font-family-mono);
+    font-weight: 500;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.375rem;
+    display: inline-block;
+  }
+  .badge-high {
+    background: rgba(239,68,68,0.15);
+    color: #f87171;
+    border: 1px solid rgba(239,68,68,0.3);
+  }
+  .badge-medium {
+    background: rgba(245,158,11,0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245,158,11,0.3);
+  }
+  .badge-low {
+    background: rgba(16,185,129,0.15);
+    color: #34d399;
+    border: 1px solid rgba(16,185,129,0.3);
+  }
+}

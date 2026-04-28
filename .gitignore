@@ -1,0 +1,19 @@
+# Python
+backend/myvenv/
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+
+# Model files (too large for git)
+backend/models/*.pkl
+backend/models/*.json
+backend/data/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Misc
+.DS_Store
+*.log
+models
