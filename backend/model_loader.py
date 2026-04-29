@@ -16,12 +16,12 @@ MODELS_DIR = BASE_DIR / "models"
 DATA_DIR   = BASE_DIR / "data" / "processed"
 
 # ── Replace these with your actual Google Drive file IDs ──────
-GDRIVE_FILES = {
-    MODELS_DIR / "failsafe_model.pkl"    : "https://drive.google.com/file/d/12wblfLUzIuH5FhYhi3UbJehV9dqTYciN/view",
-    MODELS_DIR / "shap_explainer.pkl"    : "https://drive.google.com/file/d/1De2w7p2quIDNsaWPba1k2fM8G8ihVLwu/view",
-    MODELS_DIR / "threshold_config.json" : "https://drive.google.com/file/d/1ZRkV-pRHnGjbXemIdivE7vUldcL44k-Q/view",
-    DATA_DIR   / "features.json"         : "https://drive.google.com/file/d/1o6YfZAGBKGDvbaOx-CjJqSzZSgwp2WHN/view",
-}
+# GDRIVE_FILES = {
+#     MODELS_DIR / "failsafe_model.pkl"    : "https://drive.google.com/file/d/12wblfLUzIuH5FhYhi3UbJehV9dqTYciN/view",
+#     MODELS_DIR / "shap_explainer.pkl"    : "https://drive.google.com/file/d/1De2w7p2quIDNsaWPba1k2fM8G8ihVLwu/view",
+#     MODELS_DIR / "threshold_config.json" : "https://drive.google.com/file/d/1ZRkV-pRHnGjbXemIdivE7vUldcL44k-Q/view",
+#     DATA_DIR   / "features.json"         : "https://drive.google.com/file/d/1o6YfZAGBKGDvbaOx-CjJqSzZSgwp2WHN/view",
+# }
 
 # Global model references — None until loaded
 MODEL              = None
@@ -38,78 +38,65 @@ def _ensure_dirs():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _download_from_gdrive():
-    """
-    Download missing files from Google Drive using gdown.
-    Skips files that already exist.
-    Skips files whose ID is still the placeholder.
-    """
-    try:
-        import gdown
-    except ImportError:
-        logger.warning("gdown not installed — skipping auto-download. "
-                       "Run: pip install gdown")
-        return
+# def _download_from_gdrive():
+#     """
+#     Download missing files from Google Drive using gdown.
+#     Skips files that already exist.
+#     Skips files whose ID is still the placeholder.
+#     """
+#     try:
+#         import gdown
+#     except ImportError:
+#         logger.warning("gdown not installed — skipping auto-download. "
+#                        "Run: pip install gdown")
+#         return
 
-    for path, file_id in GDRIVE_FILES.items():
-        if path.exists():
-            logger.info(f"Already exists: {path.name}")
-            continue
+#     for path, file_id in GDRIVE_FILES.items():
+#         if path.exists():
+#             logger.info(f"Already exists: {path.name}")
+#             continue
 
-        if file_id.startswith("YOUR_"):
-            logger.warning(f"No Google Drive ID set for {path.name} — skipping.")
-            continue
+#         if file_id.startswith("YOUR_"):
+#             logger.warning(f"No Google Drive ID set for {path.name} — skipping.")
+#             continue
 
-        logger.info(f"Downloading {path.name} from Google Drive...")
-        try:
-            url = f"https://drive.google.com/uc?id={file_id}"
-            gdown.download(url, str(path), quiet=False)
-            if path.exists():
-                logger.info(f"Downloaded: {path.name} ({path.stat().st_size // 1024} KB)")
-            else:
-                logger.error(f"Download failed silently: {path.name}")
-        except Exception as e:
-            logger.error(f"Failed to download {path.name}: {e}")
+        # logger.info(f"Downloading {path.name} from Google Drive...")
+        # try:
+        #     url = f"https://drive.google.com/uc?id={file_id}"
+        #     gdown.download(url, str(path), quiet=False)
+        #     if path.exists():
+        #         logger.info(f"Downloaded: {path.name} ({path.stat().st_size // 1024} KB)")
+        #     else:
+        #         logger.error(f"Download failed silently: {path.name}")
+        # except Exception as e:
+        #     logger.error(f"Failed to download {path.name}: {e}")
 
 
-def _check_missing() -> list:
-    """Return list of missing required files."""
-    missing = []
-    for path in GDRIVE_FILES:
-        if not path.exists():
-            missing.append(str(path.relative_to(BASE_DIR)))
+def _check_missing():
+    required_files = [
+        MODELS_DIR / "failsafe_model.pkl",
+        MODELS_DIR / "shap_explainer.pkl",
+        MODELS_DIR / "threshold_config.json",
+        DATA_DIR   / "features.json",
+    ]
+
+    missing = [str(p) for p in required_files if not p.exists()]
     return missing
 
 
 def load_models():
-    """
-    Load model files into memory.
-    Auto-downloads from Google Drive if files are missing.
-    Safe to call multiple times — only loads once.
-    """
     global MODEL, EXPLAINER, THRESH_CONFIG, FEATURES, DECISION_THRESHOLD, _loaded
 
     if _loaded:
-        return  # already loaded — no-op
+        return
 
     _ensure_dirs()
 
-    # Download any missing files
-    missing_before = _check_missing()
-    if missing_before:
-        logger.info(f"Missing files: {missing_before} — attempting download...")
-        _download_from_gdrive()
+    # Check files exist
+    missing = _check_missing()
+    if missing:
+        raise RuntimeError(f"Missing model files: {missing}")
 
-    # Check again after download attempt
-    missing_after = _check_missing()
-    if missing_after:
-        raise RuntimeError(
-            f"Model files still missing after download attempt: {missing_after}\n"
-            "Check that your Google Drive file IDs are correct in model_loader.py "
-            "and that the files are publicly shared."
-        )
-
-    # Load into memory
     logger.info("Loading model files...")
 
     with open(MODELS_DIR / "failsafe_model.pkl", "rb") as f:
@@ -119,14 +106,14 @@ def load_models():
         EXPLAINER = pickle.load(f)
 
     with open(MODELS_DIR / "threshold_config.json") as f:
-        THRESH_CONFIG      = json.load(f)
+        THRESH_CONFIG = json.load(f)
         DECISION_THRESHOLD = THRESH_CONFIG["decision_threshold"]
 
     with open(DATA_DIR / "features.json") as f:
         FEATURES = json.load(f)
 
     _loaded = True
-    logger.info(f"Models loaded — {len(FEATURES)} features | "
-                f"threshold={DECISION_THRESHOLD}")
-    print(f"[FAILSAFE] Models loaded — {len(FEATURES)} features | "
-          f"threshold={DECISION_THRESHOLD}")
+
+    logger.info(
+        f"Models loaded — {len(FEATURES)} features | threshold={DECISION_THRESHOLD}"
+    )

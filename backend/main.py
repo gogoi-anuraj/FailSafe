@@ -42,7 +42,6 @@ async def lifespan(app: FastAPI):
         # Health check and auth endpoints still work.
         # Prediction endpoints will retry load_models() on first call.
         logger.error(f"Model loading failed at startup: {e}")
-        logger.error("check Google Drive IDs.")
 
     logger.info("FAILSAFE API started.")
     yield
