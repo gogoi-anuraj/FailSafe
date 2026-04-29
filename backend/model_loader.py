@@ -13,6 +13,28 @@ BASE_DIR   = pathlib.Path(__file__).parent
 MODELS_DIR = BASE_DIR / "models"
 DATA_DIR   = BASE_DIR / "data" / "processed"
 
+def _download_if_missing():
+    """Download model files from Google Drive if not present."""
+    try:
+        import gdown
+    except ImportError:
+        return  # gdown not installed, skip
+
+    MODELS_DIR.mkdir(exist_ok=True)
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    FILES = {
+        MODELS_DIR / "failsafe_model.pkl"    : "https://drive.google.com/file/d/12wblfLUzIuH5FhYhi3UbJehV9dqTYciN/view",
+        MODELS_DIR / "shap_explainer.pkl"    : "https://drive.google.com/file/d/1De2w7p2quIDNsaWPba1k2fM8G8ihVLwu/view",
+        MODELS_DIR / "threshold_config.json" : "https://drive.google.com/file/d/1ZRkV-pRHnGjbXemIdivE7vUldcL44k-Q/view",
+        DATA_DIR   / "features.json"         : "https://drive.google.com/file/d/1o6YfZAGBKGDvbaOx-CjJqSzZSgwp2WHN/view",
+    }
+
+    for path, file_id in FILES.items():
+        if not path.exists():
+            print(f"Downloading {path.name} from Google Drive...")
+            gdown.download(id=file_id, output=str(path), quiet=False)
+
 
 def _load():
     # Clear error messages if files are missing
@@ -44,7 +66,7 @@ def _load():
 
     return model, explainer, thresh, features
 
-
+_download_if_missing()
 # Load once at import time
 try:
     MODEL, EXPLAINER, THRESH_CONFIG, FEATURES = _load()
