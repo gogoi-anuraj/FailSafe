@@ -28,7 +28,7 @@ from schemas             import (StudentInput, AssessmentResponse,
                                  BatchResponse, BatchSummaryItem)
 from auth                import get_current_user
 from database            import User
-from model_loader        import MODEL, EXPLAINER, FEATURES, DECISION_THRESHOLD
+import model_loader   
 from intervention_engine_groq import run_full_assessment
 
 router = APIRouter(tags=["Predictions"])
@@ -73,7 +73,7 @@ def _validate_row(row: dict) -> tuple[dict, list[str]]:
     cleaned = {}
     errors  = []
 
-    for feat in FEATURES:
+    for feat in model_loader.FEATURES:
         val  = row.get(feat)
         rule = FIELD_RULES.get(feat)
 
@@ -213,14 +213,14 @@ def predict_single(
 
     try:
         result = run_full_assessment(
-            student_id   = payload.student_id,
-            student_data = student_data,
-            model        = MODEL,
-            explainer    = EXPLAINER,
-            features     = FEATURES,
-            threshold    = DECISION_THRESHOLD,
-            use_llm      = True,
-        )
+              student_id   = payload.student_id,
+              student_data = student_data,
+              model        = model_loader.MODEL,
+              explainer    = model_loader.EXPLAINER,
+              features     = model_loader.FEATURES,
+              threshold    = model_loader.DECISION_THRESHOLD,
+              use_llm      = True,
+)
     except Exception as e:
         raise HTTPException(
             status_code = status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -266,7 +266,7 @@ def predict_batch(
         raise HTTPException(status_code=400, detail="Could not read the CSV file. Check it is valid.")
 
     # ── Check required columns exist ──────────────────────────
-    missing_cols = [f for f in FEATURES if f not in df.columns]
+    missing_cols = [f for f in model_loader.FEATURES if f not in df.columns]
     if missing_cols:
         raise HTTPException(
             status_code = 400,
@@ -294,13 +294,13 @@ def predict_batch(
 
         try:
             result = run_full_assessment(
-                student_id   = sid,
-                student_data = student_data,
-                model        = MODEL,
-                explainer    = EXPLAINER,
-                features     = FEATURES,
-                threshold    = DECISION_THRESHOLD,
-                use_llm      = False,   # rules only for batch — save Groq credits
+               student_id   = sid,
+               student_data = student_data,
+               model        = model_loader.MODEL,
+               explainer    = model_loader.EXPLAINER,
+               features     = model_loader.FEATURES,
+               threshold    = model_loader.DECISION_THRESHOLD,
+               use_llm      = True,
             )
         except Exception:
             skipped_rows += 1
