@@ -25,7 +25,10 @@ logger = logging.getLogger("failsafe")
 async def lifespan(app: FastAPI):
     # 1. Create DB tables
     logger.info("Creating database tables...")
-    create_tables()
+    try:
+      create_tables()
+    except Exception as e:
+      logger.error(f"DB error: {e}")
 
     # 2. Download + load ML models at startup
     # This runs BEFORE any request is served so the first
