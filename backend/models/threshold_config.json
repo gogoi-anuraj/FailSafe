@@ -1,0 +1,5 @@
+{
+  "decision_threshold": 0.2,
+  "risk_low_threshold": 0.35,
+  "risk_high_threshold": 0.65
+}

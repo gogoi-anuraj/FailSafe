@@ -16,4 +16,5 @@ frontend/dist/
 # Misc
 .DS_Store
 *.log
-models
+
+model
