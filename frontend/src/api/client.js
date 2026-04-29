@@ -1,7 +1,11 @@
 import axios from 'axios'
 
+const BASE_URL = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL   // production — direct backend URL
+  : '/api'                          // development — Vite proxy
+
 const client = axios.create({
-  baseURL: '/api',
+  baseURL: BASE_URL,
   timeout: 30000,
 })
 
@@ -27,19 +31,19 @@ client.interceptors.response.use(
   }
 )
 
-// ── Auth ─────────────────────────────────────────────────────
+// ── Auth ──────────────────────────────────────────────────────
 export const login    = (data) => client.post('/auth/login', data)
 export const register = (data) => client.post('/auth/register', data)
 export const getMe    = ()     => client.get('/auth/me')
 
 // ── Predictions ───────────────────────────────────────────────
-export const predictSingle   = (data) => client.post('/predict', data)
-export const predictBatch    = (file) => {
+export const predictSingle = (data) => client.post('/predict', data)
+export const predictBatch  = (file) => {
   const form = new FormData()
   form.append('file', file)
   return client.post('/predict-batch', form, {
     headers: { 'Content-Type': 'multipart/form-data' },
-    timeout: 120000,  // batch can take longer
+    timeout: 120000,
   })
 }
 export const getTemplate              = ()     => client.get('/template', { responseType: 'blob' })
