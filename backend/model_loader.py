@@ -63,7 +63,7 @@ def _download_from_gdrive():
         logger.info(f"Downloading {path.name} from Google Drive...")
         try:
             url = f"https://drive.google.com/uc?id={file_id}"
-            gdown.download(url, str(path), quiet=False, fuzzy=True)
+            gdown.download(url, str(path), quiet=False)
             if path.exists():
                 logger.info(f"Downloaded: {path.name} ({path.stat().st_size // 1024} KB)")
             else:
