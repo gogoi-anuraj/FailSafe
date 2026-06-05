@@ -603,7 +603,7 @@ Authorization: Bearer eyJ...
 
 ## License
 
-This project was built as part of a Coding Club, IIT Guwahati Summer project on AI-assisted academic intervention systems.
+This project was built as part of a Coding Club, IIT Guwahati Even Semester project on AI-assisted academic intervention systems.
 
 ---
 
