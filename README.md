@@ -569,7 +569,7 @@ Authorization: Bearer eyJ...
 ---
 
 ## Live Demo
-
+> Start the backend first, before going to the vercel app
 - Backend Render deployment: https://failsafe-nki6.onrender.com/
 - Frontend Vercel deployment: https://fail-safe-ag.vercel.app
 
