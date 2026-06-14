@@ -606,7 +606,8 @@ export default function Upload() {
                   Download CSV Template
                 </p>
                 <p className="text-xs text-muted mt-0.5">
-                  Fill this in Excel or Google Sheets, then upload below
+                  Fill this in Excel or Google Sheets, then upload below.
+                  Delete the range guide row before uploading.
                 </p>
               </div>
               <button
